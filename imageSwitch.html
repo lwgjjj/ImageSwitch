@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>Document</title>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			#box{
+				width:400px;
+				height: 400px;
+				border: 2px solid black;
+				margin: 100px auto;
+				position: relative;
+				-webkit-user-select: none;
+				-ms-user-select: none;
+				background-color: #ccc;
+			}
+			img {
+				width: 100px;
+				height: 100px;
+				position: absolute;
+				display: block;
+				box-sizing: border-box;
+				-webkit-user-select: none;
+				-ms-user-select: none;
+			}
+			#btn{
+				position: absolute;
+				left: 50%;
+				top: 0;
+			}
+		</style>
+	</head>
+	<body style="background-color:#F1F1F1">
+	<button id="btn">随机顺序</button>
+	<div id="box">
+		<img src="img/1.png" alt="" />
+		<img src="img/2.png" alt="" />
+		<img src="img/3.png" alt="" />
+		<img src="img/4.png" alt="" />
+		<img src="img/5.png" alt="" />
+		<img src="img/6.png" alt="" />
+		<img src="img/7.png" alt="" />
+		<img src="img/8.png" alt="" />
+		<img src="img/9.png" alt="" />
+	</div>
+	</body>
+	<script>
+		var oBox=document.getElementById("box");
+		var oBtn=document.getElementById("btn");
+		var aImg = document.getElementsByTagName("img");
+		// 循环将所有的图片进行定位
+		for(var i = 0; i < aImg.length; i++) {
+			aImg[i].style.left = 120 * (i%3)+30 + "px";
+			aImg[i].style.top = 120 * parseInt(i/3)+30 + "px";
+			imgDrag(aImg[i]);
+		}
+		
+		// 伪数组转换为数组
+		var aa=[];
+		for(var i=0;i<aImg.length;i++){
+			aa.push(aImg[i]);
+		}
+		// 伪数组没有方法
+		oBtn.onclick=function(){
+			randomChange(aa);
+		};
+		var onOff=false;
+		function randomChange(arr){
+			if(onOff===false){
+				onOff = true
+				// 首先去掉一个 剩下的组成四组
+				for(var i=0;i<arr.length;i++){
+					arr[i].style.transition = 'all ease 0.5s'
+				}
+				var no=parseInt(Math.random()*arr.length);
+				// 给下标设置自己跟自己调换位置
+				arr[no].style.left=arr[no].offsetLeft+"px";
+				arr[no].style.top=arr[no].offsetTop+"px";
+				// 删除被选中的数组元素并且记录下来
+				var deleteElement = arr.splice(no,1);
+				// 剩下八个数
+				// 8个数 随机分4组
+				// 利用随机函数 排序
+				arr.sort(function(a,b){
+					return Math.random()>.5?-1:1;
+				});
+				// 数组中的所有 偶数元素与下一个元素交换位置
+				for(var i=0;i<arr.length;i++){	
+					if(i%2==0){
+						arr[i].style.left=arr[i+1].offsetLeft+"px";
+						arr[i].style.top=arr[i+1].offsetTop+"px";
+						arr[i+1].style.left=arr[i].offsetLeft+"px";
+						arr[i+1].style.top=arr[i].offsetTop+"px";
+					} else{
+						continue;
+					}
+				}
+				// 给变换的数组内的其中任意一项加一个transitionend事件，改变开关的值就可以实现
+				// 控制无法多次点击
+				arr[0].addEventListener('transitionend',function(){
+						onOff = false;
+				})
+				arr.push(deleteElement[0])
+			}
+		}
+		function imgDrag(name) {
+			name.onmousedown = function(ev) {
+				ev = ev || event;
+
+				// 获取一个当前鼠标点击位置与图片的原点的距离
+				var disX = ev.clientX - this.offsetLeft;
+				var disY = ev.clientY - this.offsetTop;
+				
+				// 清除浏览器默认事件
+				ev.preventDefault && ev.preventDefault();
+				
+				// ie的清除默认事件
+				ev.returnValue = false;
+				// ie的获取全局焦点
+				name.setCapture && oBox.setCapture();
+				
+				// 在鼠标按下的时候存储当前位置的定位值
+				var firstL=name.offsetLeft;
+				var firstT=name.offsetTop;
+
+				// 后面的存储被碰撞物体的对象 如果定义在move中 最后的mouseup无法获取 这里定义一个
+				// 全局变量 在mousemove的时候直接赋值
+				var obj=null;		
+				
+				document.onmousemove = function(ev) {
+					// 暴力清除所有的transition属性==>当我们交换位置的时候会给当前物体和被交换物体加上一个transition属性，这里清除掉，
+					// 否则后面再次拖的时候就拖不动了
+					// 暴力清除所有的zIndex属性，当前的物体给加上了999的层级，每次拖的时候都释放掉
+					for(var i=0;i<aImg.length;i++){
+						aImg[i].style.transition=null;
+						aImg[i].style.zIndex=1;
+						aImg[i].style.border=null;
+					}
+					//当前的加上999层级
+					name.style.zIndex=999;
+					ev = ev || event;
+					// 当move的时候，首先ev.clientX时刻变化，减去我们开始记录的差值（disX）就是我们的拖动的图片的
+					// 应该被定位的位置了
+					var l = ev.clientX-disX;
+					var t = ev.clientY-disY;
+					// 定义图片的一个可拖放的范围，当超出的时候，就等于最大值或者最小值
+					if(l<0){l=0}
+					if(l>oBox.clientWidth-name.offsetWidth)
+					  {l=oBox.clientWidth-name.offsetWidth}
+					if(t>oBox.clientHeight-name.offsetHeight)
+					  {t=oBox.clientHeight-name.offsetHeight}
+					if(t<0){t=0}
+					// 赋值属性
+					name.style.left = l + "px";
+					name.style.top = t + "px";
+					// 碰撞检测
+					// 建立一个存储所有被撞图片的数组
+					var arrImg=[];
+					for(var i=0;i<aImg.length;i++){
+						// 如果数组元素不和当前一样
+						if(aImg[i]!=name){
+						// 判断是否碰撞 传入建立的数组，这个hitTest方法返回值有true和false，对应撞上和没撞上
+							if(hitTest(name,aImg[i])){
+								arrImg.push(aImg[i]);
+							}
+						}
+					}
+					// 判断数组中哪个是距离目标元素最近的
+					// 上面已经定义了一个全局变量，这里进行赋值
+					obj=null;
+					// 定义一个最小值，定值为无穷大
+					var minValue=Infinity;
+					// 如果存放碰撞元素的数组内有元素
+					if(arrImg.length){
+						for (var i=0;i<arrImg.length;i++) {
+							// 声明一下我们的元素的上边之间的距离
+							var a=arrImg[i].offsetLeft-name.offsetLeft;
+							// 声明一下我们的元素左边之间的距离
+							var b=arrImg[i].offsetTop-name.offsetTop;
+							// 取得距离的平方和 谁的平方和小 说明谁离得最近
+							var c=a*a+b*b;
+							if(minValue>c){
+								minValue=c;
+								obj=arrImg[i];
+							}
+						}
+					}
+					// 这里已经可以确定有没有元素与我们的被拖拽元素相撞了,然后给我们的被碰撞元素
+					// 加上一个虚线边框
+					if(obj){
+						// 提升一下当前的移动元素的层级 提升到998 比当前拖动的元素小1 但是比其他的都大
+						obj.style.zIndex= 998;
+						obj.style.border="2px dashed red";
+					}
+					// 判断一下当前的鼠标的位置,如果鼠标处于活动范围之外，就将事件都停止，归位拖动的元素
+					if(ev.clientX>(oBox.offsetLeft+oBox.offsetWidth) || ev.clientX<oBox.offsetLeft || ev.clientY> (oBox.offsetTop+ oBox.offsetHeight) || ev.clientY<oBox.offsetTop){
+						if(obj){	
+							obj.style.border = null
+							// 清空对象是严禁的写法 因为出了边界 这一次存储的对象元素 也就没有作用了，可以清空，也可以不清空，并没有使用闭包的形式来返回对obj有依赖的函数
+							obj = null
+						}
+						name.style.transition='top ease 0.5s,left ease 0.5s';
+						name.style.left=firstL+"px";
+						name.style.top=firstT+"px";
+						document.onmousemove = document.onmouseup = null;
+					}
+				}
+				document.onmouseup = function() {
+					document.onmousemove = document.onmouseup = null;
+					if(obj){
+						// 这里清除一下我们的被碰撞元素的边框，如果只是在最开始的mousedown的时候清除
+						// 就会造成图片的边框在下面的transition的时候发生变化
+						// 解决方案1 在这里先将我们的边框去除一下，最后的那行代码也可以去掉，当obj的color归为null的代码，然后下面的transition里面的属性写all或者不写
+						// 解决方案2 将我们的被碰撞元素obj的transition设置为只有left和top,然后边框就没有渐变，直接从有
+						// 变成无
+						
+						// 拖拽元素与碰撞元素交换定位属性，我们在mousedown的时候有为拖拽元素存firstT firstL
+
+						// obj.style.border=null;
+						name.style.transition="all ease 0.5s";
+						name.style.left=obj.offsetLeft+"px";
+						name.style.top=obj.offsetTop+"px";
+						obj.style.transition="left ease 0.5s,top ease 0.5s";
+						obj.style.top=firstT+"px";
+						obj.style.left=firstL+"px";
+						obj.style.border=null;
+					
+					}
+					else{
+						// 如果没有碰撞元素 当前元素归位
+						name.style.transition="all ease 0.5s";
+						name.style.left=firstL+"px";
+						name.style.top=firstT+"px";
+					}
+					// 当鼠标抬起的时候记得释放全局焦点（ie678的兼容）
+					name.setCapture && name.releaseCapture();
+				}
+			}
+		}
+		// 碰撞检测的方法
+		function hitTest(obj1,obj2){
+			var obj1W=obj1.offsetWidth;
+			var obj1H=obj1.offsetHeight;
+			var obj1T=obj1.offsetTop;
+			var obj1L=obj1.offsetLeft;
+			
+			var obj2W=obj2.offsetWidth;
+			var obj2H=obj2.offsetHeight;
+			var obj2T=obj2.offsetTop;
+			var obj2L=obj2.offsetLeft;
+			if(obj1W+obj1L<obj2L || obj1T+obj1H <obj2T || obj1L> obj2L+obj2W || obj1T>obj2T+obj2H){
+				return false;
+			} else {
+				return true;
+			}
+		}
+	</script>
+</html>
