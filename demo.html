@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+<style>
+.zhengfangxing{
+    width: 100px;
+    height: 100px;
+    border: 1px solid #000;
+}
+.changfangxing{
+    width:200px;
+    height: 100px;
+    border: 1px solid #000;
+}
+.yuan{
+width: 150px;
+height: 150px;
+border-radius: 50%;
+}
+</style>
+</head>
+<body>
+<div>
+<input type="file" name="">
+<select value='1'>
+    <option value="1">正方形</option>
+    <option value="2">长方形1:2</option>
+<!--     <option value="3">三角形</option>
+    <option value="4">菱形</option> -->
+    <option value="5">圆</option>
+</select>
+  <button>确定</button>
+</div>
+<div class='preview'>
+</div>
+<script src="node_modules/jquery/dist/jquery.min.js"></script>
+<script>
+var src =''
+$('input').change(function(){
+    var reader = new FileReader();
+    src = this.files[0]
+})
+$('button').on('click',function(){
+    var $input = $('input')
+    var className = ''
+    var typeValue = $('select').val()
+    var fileReader = new FileReader();
+    fileReader.readAsDataURL(src);
+    fileReader.onload=function(e){
+        switch(typeValue){
+            case '1': className = 'zhengfangxing';
+            break;
+            case '2': className = 'changfangxing';
+            break;
+            // case '3': className = 'sanjiaoxing';
+            // break;
+            // case '4': className = 'lingxing';
+            // break;
+            case '5': className = 'yuan';
+            break;
+        }
+        $('.preview').html('<img class='+className+' src="' + e.target.result + '" />')
+    }
+})
+</script>
+</body>
+</html>
+ <!-- <!DOCTYPE html>
+ <html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<style type="text/css">
+ #preview, .img, img
+ {
+ width:200px;
+ height:200px;
+ }
+ #preview
+ {
+border:1px solid #000;
+}
+ </style>
+ </head>
+<body>
+ <div id="preview"></div>
+<input type="file" onchange="preview(this)" />
+ <script type="text/javascript">
+ function preview(file)
+ {
+ var prevDiv = document.getElementById('preview');
+ if (file.files && file.files[0]){
+    var reader = new FileReader();
+    reader.readAsDataURL(file.files[0]);
+    reader.onload = function(evt){
+    prevDiv.innerHTML = '<img src="' + evt.target.result + '" />';
+ }
+}
+ else
+ {
+ prevDiv.innerHTML = '<div class="img" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src=\'' + file.value + '\'"></div>';
+ }
+ }
+ </script>
+ </body>
+ </html> -->

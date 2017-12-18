@@ -124,7 +124,7 @@
 	          	top:maxTop,
 	          	left:maxLeft
 	          }
-	          var left = obj.left + 100 
+	          var left = obj.left + 100
 	          var top = obj.top
 	          if(left>=800){
 	          	left = 0
@@ -132,15 +132,18 @@
 	          }
 	          newImg.style.left = left + 'px'
 	          newImg.style.top = top + 'px'
+	          newImg.width = '100px'
+	          newImg.height = '100px'
+	          newImg.style.borderRadius = '50%'
 	          that.oBox.append(newImg)
 	      		that.imgArr.push(newImg)
 	      		// 再次注册一遍事件
 	      		for(var i = 0; i < that.imgArr.length; i++) {
-							that.imgDrag(that.imgArr[i]);
-						}
+					that.imgDrag(that.imgArr[i]);
+				}
 	        }
 	      }
-	    })	
+	    })
 		}
 		ImageSwitch.prototype.randomChange = function(){
 			var that = this
@@ -156,7 +159,7 @@
 							return Math.random()>.5?-1:1;
 						});
 						// 数组中的所有 偶数元素与下一个元素交换位置
-						for(var i=0;i<arr.length;i++){	
+						for(var i=0;i<arr.length;i++){
 							if(i%2==0){
 								arr[i].style.left=arr[i+1].offsetLeft+"px";
 								arr[i].style.top=arr[i+1].offsetTop+"px";
@@ -179,7 +182,7 @@
 							return Math.random()>.5?-1:1;
 						});
 						// 数组中的所有 偶数元素与下一个元素交换位置
-						for(var i=0;i<arr.length;i++){	
+						for(var i=0;i<arr.length;i++){
 							if(i%2==0){
 								arr[i].style.left=arr[i+1].offsetLeft+"px";
 								arr[i].style.top=arr[i+1].offsetTop+"px";
@@ -192,7 +195,7 @@
 						})
 						arr.push(deleteElement[0])
 					}
-				}		
+				}
 		}
 		ImageSwitch.prototype.imgDrag = function(ele){
 			var that = this
@@ -201,22 +204,22 @@
 				// 获取一个当前鼠标点击位置与图片的原点的距离
 				var disX = ev.clientX - this.offsetLeft;
 				var disY = ev.clientY - this.offsetTop;
-				
+
 				// 清除浏览器默认事件
 				ev.preventDefault && ev.preventDefault();
-				
+
 				// ie的清除默认事件
 				ev.returnValue = false;
 				// ie的获取全局焦点
 				ele.setCapture && oBox.setCapture();
-				
+
 				// 在鼠标按下的时候存储当前位置的定位值
 				var firstL=ele.offsetLeft;
 				var firstT=ele.offsetTop;
 
 				// 后面的存储被碰撞物体的对象 如果定义在move中 最后的mouseup无法获取 这里定义一个
 				// 全局变量 在mousemove的时候直接赋值
-				var obj=null;						
+				var obj=null;
 				document.onmousemove = function(ev) {
 					// 暴力清除所有的transition属性==>当我们交换位置的时候会给当前物体和被交换物体加上一个transition属性，这里清除掉，
 					// 否则后面再次拖的时候就拖不动了
@@ -284,7 +287,7 @@
 					}
 					// 判断一下当前的鼠标的位置,如果鼠标处于活动范围之外，就将事件都停止，归位拖动的元素
 					if(ev.clientX>(that.oBox.offsetLeft+that.oBox.offsetWidth) || ev.clientX<that.oBox.offsetLeft || ev.clientY> (that.oBox.offsetTop+ that.oBox.offsetHeight) || ev.clientY<that.oBox.offsetTop){
-						if(obj){	
+						if(obj){
 							obj.style.border = null
 							// 清空对象是严禁的写法 因为出了边界 这一次存储的对象元素 也就没有作用了，可以清空，也可以不清空，并没有使用闭包的形式来返回对obj有依赖的函数
 							obj = null
@@ -329,7 +332,7 @@
 				var obj1H=obj1.offsetHeight;
 				var obj1T=obj1.offsetTop;
 				var obj1L=obj1.offsetLeft;
-				
+
 				var obj2W=obj2.offsetWidth;
 				var obj2H=obj2.offsetHeight;
 				var obj2T=obj2.offsetTop;
